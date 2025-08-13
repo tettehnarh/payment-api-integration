@@ -3,11 +3,15 @@ from flask import Flask, jsonify
 from dotenv import load_dotenv
 from .config import load_config
 from .routes import api
+from .logging_config import setup_logging
 
 
 def create_app() -> Flask:
     # Load env variables from .env if present
     load_dotenv(override=False)
+
+    # Set up logging (console INFO, file WARNING -> logs/errors.log)
+    setup_logging()
 
     app = Flask(__name__)
 

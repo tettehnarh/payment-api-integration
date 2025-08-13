@@ -40,11 +40,12 @@ Note: paystack_api_key_configured will be false if PAYSTACK_API_KEY is not set.
 ```
 .
 ├── app/
-│   ├── __init__.py        # create_app factory + /health route and blueprint registration
-│   ├── config.py          # loads env vars via python-dotenv
-│   ├── routes.py          # POST /pay route
-│   └── payment_service.py # Paystack API helper for initiating payments
-├── wsgi.py                # entrypoint for local dev
+│   ├── __init__.py         # create_app factory + /health route and blueprint registration
+│   ├── config.py           # loads env vars via python-dotenv
+│   ├── logging_config.py   # logging to console + logs/errors.log
+│   ├── routes.py           # POST /pay + GET /status/<reference>
+│   └── payment_service.py  # Paystack API helpers (initiate + verify)
+├── wsgi.py                 # entrypoint for local dev
 ├── requirements.txt
 ├── .env.example
 ├── logs/
@@ -53,10 +54,26 @@ Note: paystack_api_key_configured will be false if PAYSTACK_API_KEY is not set.
 └── README.md
 ```
 
+## API usage examples
+
+- Initialize payment
+```bash
+curl -X POST http://127.0.0.1:5000/pay \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 500, "currency": "GHS", "email": "sandbox@example.com"}'
+```
+
+- Verify payment status (replace <reference> with value from init response)
+```bash
+curl http://127.0.0.1:5000/status/<reference>
+```
+
+## Logging
+- Console: INFO level
+- File: logs/errors.log (WARNING and above, rotating)
+
 ## Next Steps
 We will add:
-- Payment service for Paystack API calls
-- Routes: POST /pay and GET /status/<transaction_id>
-- Logging and error handling
+- Robust error handling, structured logging for API request/response
 - Postman collection and extended docs
 
