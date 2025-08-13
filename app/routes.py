@@ -15,6 +15,11 @@ def pay():
     email = (payload.get("email") or "").strip()
     currency = (payload.get("currency") or "GHS").strip().upper()
     amount_raw = payload.get("amount")
+    callback_url = (payload.get("callback_url") or "").strip() or None
+    if not callback_url:
+        public_base = getattr(current_app.config.get("APP_CONFIG"), "PUBLIC_BASE_URL", "")
+        if public_base:
+            callback_url = f"{public_base}/callback"
 
     # Validate required fields
     if not email:
@@ -37,7 +42,7 @@ def pay():
         return jsonify({"status": "error", "message": "amount must be > 0", "data": None}), 400
 
     cfg = current_app.config["APP_CONFIG"]
-    result = initiate_payment(cfg, amount_major, currency, email)
+    result = initiate_payment(cfg, amount_major, currency, email, callback_url=callback_url)
 
     status = "success" if result["ok"] else "error"
     return (
@@ -53,6 +58,27 @@ def status(reference: str):
     status_val = "success" if result["ok"] else "error"
     return (
         jsonify({"status": status_val, "message": result["message"], "data": result["data"]}),
+        200 if result["ok"] else (401 if result["status_code"] == 401 else 400),
+    )
+
+
+@api.get("/callback")
+def callback():
+    # Paystack redirects with query params: reference=... [and possibly trxref]
+    reference = (request.args.get("reference") or request.args.get("trxref") or "").strip()
+    if not reference:
+        return jsonify({"status": "error", "message": "Missing reference in callback", "data": None}), 400
+
+    cfg = current_app.config["APP_CONFIG"]
+    result = verify_payment(cfg, reference)
+    status_val = "success" if result["ok"] else "error"
+    # For a demo, return JSON. In real apps, you might render a page.
+    return (
+        jsonify({
+            "status": status_val,
+            "message": result["message"],
+            "data": result["data"],
+        }),
         200 if result["ok"] else (401 if result["status_code"] == 401 else 400),
     )
 

@@ -18,7 +18,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"amount\": 500,\n  \"currency\": \"GHS\",\n  \"email\": \"sandbox@example.com\"\n}"
+          "raw": "{\n  \"amount\": 500,\n  \"currency\": \"GHS\",\n  \"email\": \"sandbox@example.com\",\n  \"callback_url\": \"{{publicBaseUrl}}/callback\"\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/pay",
@@ -70,7 +70,11 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://127.0.0.1:8000"
+      "value": "http://127.0.0.1:5000"
+    },
+    {
+      "key": "publicBaseUrl",
+      "value": "https://053a07fbb96b.ngrok-free.app"
     },
     {
       "key": "reference",
