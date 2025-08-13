@@ -19,29 +19,40 @@ source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
 pip install -r requirements.txt
 ```
 
-### 3) Run the app
+### 3) Configure environment
+Create a .env file based on .env.example and set your Paystack test secret key:
+```bash
+cp .env.example .env
+# then edit .env to set PAYSTACK_API_KEY
+```
+
+### 4) Run the app
 ```bash
 python wsgi.py
 ```
 Visit http://127.0.0.1:5000/health and you should see:
 ```json
-{"status":"ok"}
+{"status":"ok","paystack_api_key_configured": true}
 ```
+Note: paystack_api_key_configured will be false if PAYSTACK_API_KEY is not set.
 
 ## Project Structure
 ```
 .
 ├── app/
-│   └── __init__.py        # create_app factory + /health route
+│   ├── __init__.py        # create_app factory + /health route
+│   └── config.py          # loads env vars via python-dotenv
 ├── wsgi.py                # entrypoint for local dev
 ├── requirements.txt
+├── .env.example
+├── logs/
+│   └── .gitkeep
 ├── .gitignore
 └── README.md
 ```
 
 ## Next Steps
 We will add:
-- Environment config loading with python-dotenv
 - Payment service for Paystack API calls
 - Routes: POST /pay and GET /status/<transaction_id>
 - Logging and error handling
