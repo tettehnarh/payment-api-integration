@@ -40,8 +40,10 @@ Note: paystack_api_key_configured will be false if PAYSTACK_API_KEY is not set.
 ```
 .
 ├── app/
-│   ├── __init__.py        # create_app factory + /health route
-│   └── config.py          # loads env vars via python-dotenv
+│   ├── __init__.py        # create_app factory + /health route and blueprint registration
+│   ├── config.py          # loads env vars via python-dotenv
+│   ├── routes.py          # POST /pay route
+│   └── payment_service.py # Paystack API helper for initiating payments
 ├── wsgi.py                # entrypoint for local dev
 ├── requirements.txt
 ├── .env.example

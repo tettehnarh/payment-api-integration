@@ -2,6 +2,7 @@ import os
 from flask import Flask, jsonify
 from dotenv import load_dotenv
 from .config import load_config
+from .routes import api
 
 
 def create_app() -> Flask:
@@ -12,6 +13,9 @@ def create_app() -> Flask:
 
     # Load and attach config for later use
     app.config["APP_CONFIG"] = load_config()
+
+    # Register API blueprint
+    app.register_blueprint(api)
 
     @app.get("/health")
     def health():
