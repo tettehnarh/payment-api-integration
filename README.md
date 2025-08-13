@@ -30,7 +30,7 @@ cp .env.example .env
 ```bash
 python wsgi.py
 ```
-Visit http://127.0.0.1:5000/health and you should see:
+Visit http://127.0.0.1:8000/health and you should see:
 ```json
 {"status":"ok","paystack_api_key_configured": true}
 ```
@@ -58,22 +58,33 @@ Note: paystack_api_key_configured will be false if PAYSTACK_API_KEY is not set.
 
 - Initialize payment
 ```bash
-curl -X POST http://127.0.0.1:5000/pay \
+curl -X POST http://127.0.0.1:8000/pay \
   -H "Content-Type: application/json" \
   -d '{"amount": 500, "currency": "GHS", "email": "sandbox@example.com"}'
 ```
 
 - Verify payment status (replace <reference> with value from init response)
 ```bash
-curl http://127.0.0.1:5000/status/<reference>
+curl http://127.0.0.1:8000/status/<reference>
 ```
 
 ## Logging
 - Console: INFO level
 - File: logs/errors.log (WARNING and above, rotating)
 
+## Postman collection
+- Import postman/payment-api-integration.postman_collection.json into Postman
+- Ensure the collection variable baseUrl points to http://127.0.0.1:8000
+- Run "Initiate Payment" then "Verify Payment Status". The reference will be set automatically from the first response.
+
+## Troubleshooting
+- 401 Missing Paystack API key: set PAYSTACK_API_KEY in .env and restart the app
+- Network error: check your internet connection and any proxy settings
+- Invalid amount or email: ensure amount is a positive number and email is non-empty
+- Paystack test errors: use Paystack test keys and test card details from their docs; ensure currency is supported (default is GHS here)
+
 ## Next Steps
 We will add:
 - Robust error handling, structured logging for API request/response
-- Postman collection and extended docs
+- More examples in the Postman collection
 

@@ -1,0 +1,85 @@
+{
+  "info": {
+    "name": "Payment API Integration Demo",
+    "_postman_id": "e7f2b7a8-4b5c-4b4a-9c4a-1234567890ab",
+    "description": "Flask + Paystack sandbox demo. Initiate payment and verify status.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Initiate Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 500,\n  \"currency\": \"GHS\",\n  \"email\": \"sandbox@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/pay",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pay"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let json = {};",
+              "try { json = pm.response.json(); } catch (e) { json = {}; }",
+              "const ref = json && json.data && json.data.reference;",
+              "if (ref) { pm.collectionVariables.set(\"reference\", ref); }",
+              "const authUrl = json && json.data && json.data.authorization_url;",
+              "if (authUrl) { pm.collectionVariables.set(\"authorization_url\", authUrl); }",
+              "pm.test(\"status code is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Verify Payment Status",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/status/{{reference}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "status",
+            "{{reference}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "reference",
+      "value": ""
+    },
+    {
+      "key": "authorization_url",
+      "value": ""
+    }
+  ]
+}
+
