@@ -16,7 +16,7 @@ def _to_minor_units(amount_major: Decimal) -> int:
     return int((quantized * 100))
 
 
-def initiate_payment(cfg: AppConfig, amount_major: Decimal, currency: str, email: str) -> Dict[str, Any]:
+def initiate_payment(cfg: AppConfig, amount_major: Decimal, currency: str, email: str, callback_url: Optional[str] = None) -> Dict[str, Any]:
     """Call Paystack transaction initialize endpoint.
 
     Returns a standardized dict:
@@ -46,8 +46,10 @@ def initiate_payment(cfg: AppConfig, amount_major: Decimal, currency: str, email
         "amount": _to_minor_units(amount_major),
         "currency": (currency or "GHS").upper(),
     }
+    if callback_url:
+        payload["callback_url"] = callback_url
 
-    logger.info("POST %s payload=%s", url, {"email": email, "amount": payload["amount"], "currency": payload["currency"]})
+    logger.info("POST %s payload=%s", url, {"email": email, "amount": payload["amount"], "currency": payload["currency"], "callback_url": bool(callback_url)})
 
     try:
         resp = requests.post(url, json=payload, headers=headers, timeout=15)
